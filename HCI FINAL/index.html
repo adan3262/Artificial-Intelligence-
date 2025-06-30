@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Modern Responsive Task Manager</title>
+  <style>
+    :root {
+      --primary-color: #2d3436;
+      --accent-color: #0984e3;
+      --bg-color: #f1f2f6;
+      --text-color: #2f3542;
+      --card-bg: #ffffff;
+    }
+    body {
+      margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg-color); color: var(--text-color);
+      display: flex; min-height: 100vh;
+    }
+    nav {
+      background: var(--primary-color); color: white; width: 250px; flex-shrink: 0;
+      display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem;
+    }
+    nav h2 { margin-bottom: 2rem; }
+    nav button {
+      background: var(--accent-color); color: white; border: none; margin: 0.5rem 0;
+      padding: 0.8rem 1.2rem; width: 100%; border-radius: 8px; cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    nav button:hover { background: #74b9ff; }
+    main {
+      flex-grow: 1; padding: 2rem; display: flex; flex-direction: column; gap: 1rem;
+    }
+    .card {
+      background: var(--card-bg); border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+    }
+    .card h3 { margin-top: 0; }
+    .task-form input[type="text"] {
+      width: 100%; padding: 0.7rem; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 1rem;
+    }
+    .task-form button {
+      background: var(--accent-color); color: white; border: none; padding: 0.7rem 1.2rem;
+      border-radius: 6px; cursor: pointer;
+    }
+    .task-form button:hover { background: #74b9ff; }
+    ul#taskList { list-style: none; padding: 0; }
+    ul#taskList li {
+      background: #dfe6e9; margin: 0.5rem 0; padding: 0.7rem; border-radius: 6px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .loading { display: none; font-weight: bold; text-align: center; }
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      nav { flex-direction: row; width: 100%; justify-content: space-around; padding: 1rem; }
+      nav h2 { margin: 0; font-size: 1.2rem; }
+      nav button { width: auto; flex: 1; margin: 0 0.3rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h2>Task Manager</h2>
+    <button onclick="focusTaskInput()">Add Task</button>
+    <button onclick="scrollToTasks()">See All Tasks</button>
+  </nav>
+  <main>
+    <div class="card">
+      <h3>Add New Task</h3>
+      <div class="loading" id="loadingIndicator">Loading...</div>
+      <form id="taskForm" class="task-form" aria-label="Task addition form">
+        <input type="text" id="taskInput" placeholder="Enter your task" required />
+        <button type="submit">Add Task</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>All Tasks</h3>
+      <ul id="taskList" aria-live="polite">
+        <!-- Tasks appear here -->
+      </ul>
+    </div>
+  </main>
+
+  <script>
+    const taskForm = document.getElementById('taskForm');
+    const taskInput = document.getElementById('taskInput');
+    const taskList = document.getElementById('taskList');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+
+    taskForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      loadingIndicator.style.display = 'block'; // Show "system status"
+      setTimeout(() => {
+        const taskText = taskInput.value.trim();
+        if (taskText) {
+          const li = document.createElement('li');
+          li.innerHTML = `<span>${taskText}</span> <button aria-label="Delete task">Delete</button>`;
+          li.querySelector('button').addEventListener('click', () => li.remove());
+          taskList.appendChild(li);
+          taskInput.value = '';
+        }
+        loadingIndicator.style.display = 'none';
+      }, 300);
+    });
+
+    function focusTaskInput() { taskInput.focus(); }
+    function scrollToTasks() { document.getElementById('taskList').scrollIntoView({ behavior: 'smooth' }); }
+  </script>
+</body>
+</html>
